@@ -1,0 +1,29 @@
+[build-system]
+requires = ["scikit-build-core >=0.4.3", "nanobind >=1.3.2"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "libising"
+version = "0.0.1"
+description = "High performance library for ising simulations."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "Robert Cronin", email = "robert.t.cronin@outlook.com" },
+]
+
+[project.urls]
+Homepage = "https://github.com/RoberCronin/hpc-ising-sim"
+
+[tool.scikit-build]
+minimum-version = "0.4"
+build-dir = "build/{wheel_tag}"
+wheel.py-api = "cp312"
+cmake.define.CMAKE_EXPORT_COMPILE_COMMANDS = "ON"
+
+[project.optional-dependencies]
+dev = [
+    "scikit-build-core>=0.5.0",
+    "nanobind>=2.0.0",
+    "pyright>=1.1.0",
+]
