@@ -1,4 +1,5 @@
 {pkgs, ...}: {
+  devenv.warnOnNewVersion = false;
   packages = with pkgs; [
     cmake
     ninja
@@ -22,5 +23,12 @@
 
   env = {
     LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib";
+  };
+
+  scripts = {
+    benchmark = {
+      exec = "pip install -qe libising && python analysis/benchmark.py";
+      description = "Benchmarks the Ising simulation";
+    };
   };
 }

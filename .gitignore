@@ -14,4 +14,7 @@ build
 compile_commands.json
 .cache
 __pycache__
+
+# run artifacts
 ising_result.png
+.benchmarks
