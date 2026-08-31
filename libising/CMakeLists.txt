@@ -44,6 +44,7 @@ nanobind_add_module(
 
   # Source code goes here
   src/bindings.cpp
+  src/engine.cpp
 )
 
 # Install directive for scikit-build-core

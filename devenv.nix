@@ -12,7 +12,11 @@
     venv = {
       enable = true;
       quiet = true;
-      requirements = "./libising[dev]";
+      requirements = ''
+        ./libising[dev]
+        numpy
+        matplotlib
+      '';
     };
   };
 
