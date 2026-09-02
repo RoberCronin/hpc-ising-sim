@@ -4,6 +4,7 @@ import shutil
 
 COMMITS_TO_BENCHMARK = [
     "main",
+    "8c63d698594744d943f7f10770de4f62ed056eb0",
 ]
 
 
@@ -15,8 +16,30 @@ def automate_historical_sweep():
     )
 
     print(f"Starting sweep. Current git location saved: {original_branch}")
+    status_output = (
+        subprocess.check_output(["git", "status", "--porcelain"])
+        .decode("utf-8")
+        .strip()
+    )
+    has_dirty_changes = len(status_output) > 0
 
     try:
+        if has_dirty_changes:
+            print("\nBenchmarking active workspace (uncommitted modifications)...")
+            print("\tRecompiling C++ bindings for active workspace...")
+            if os.path.exists("libising/build"):
+                shutil.rmtree("libising/build")
+
+            subprocess.run(
+                ["devenv", "--quiet", "shell", "--", "benchmark"],
+                check=True,
+            )
+
+            subprocess.run(
+                ["git", "stash", "push", "-m", "generate_historical_data"],
+                check=True,
+            )
+
         for commit in COMMITS_TO_BENCHMARK:
             print(f"\nBenchmarking commit: {commit}")
 
@@ -39,6 +62,8 @@ def automate_historical_sweep():
         subprocess.run(
             ["git", "checkout", original_branch], check=True, stdout=subprocess.DEVNULL
         )
+        if has_dirty_changes:
+            subprocess.run(["git", "stash", "pop"], check=True)
 
 
 if __name__ == "__main__":
