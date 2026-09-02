@@ -1,5 +1,7 @@
 #include "engine.hpp"
 #include <cstddef>
+#include <cstdint>
+#include <immintrin.h>
 #include <nanobind/ndarray.h>
 
 namespace nb = nanobind;
@@ -41,11 +43,27 @@ void IsingEngine::step_metropolis(size_t steps) {
   }
 }
 
-nb::ndarray<nb::numpy, int32_t, nb::ndim<2>> IsingEngine::get_lattice_view() {
-  size_t shape[2] = {size, size};
-  size_t dimensions = 2;
+uint32_t IsingEngine::get_index(uint16_t x, uint16_t y) const {
+  // 0x55555555 is 01010101... in binary (even bits)
+  // 0xAAAAAAAA is 10101010... in binary (odd bits)
+  uint32_t x_spread = _pdep_u32(x, 0x55555555);
+  uint32_t y_spread = _pdep_u32(y, 0xAAAAAAAA);
 
-  return nb::ndarray<nb::numpy, int32_t, nb::ndim<2>>(
-      get_lattice_data().data(), dimensions, shape, nb::handle(), nullptr,
-      nb::dtype<int32_t>());
+  return x_spread | y_spread;
+}
+
+nb::ndarray<nb::numpy, int32_t, nb::ndim<2>>
+IsingEngine::get_unpacked_lattice() {
+  // we just make a new array to send to python. we also will give ownership of
+  // it to python
+  int32_t *buffer = new int32_t[size * size];
+
+  for (size_t y = 0; y < size; y++) {
+    for (size_t x = 0; x < size; x++) {
+      buffer[y * size + x] = lattice[get_index(x, y)];
+    }
+  }
+
+  size_t shape[2] = {size, size};
+  return nb::ndarray<nb::numpy, int32_t, nb::ndim<2>>(buffer, 2, shape);
 }

@@ -47,5 +47,7 @@ nanobind_add_module(
   src/engine.cpp
 )
 
+target_compile_options(_libising_impl PRIVATE -O3 -march=native -mbmi2)
+
 # Install directive for scikit-build-core
 install(TARGETS _libising_impl LIBRARY DESTINATION libising)

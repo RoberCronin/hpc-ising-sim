@@ -18,7 +18,7 @@ private:
   std::mt19937 rng;
   std::uniform_real_distribution<double> uniform_dist;
 
-  inline int get_index(int x, int y) const { return y * size + x; }
+  uint32_t get_index(uint16_t x, uint16_t y) const;
 
 public:
   IsingEngine(int size, double temp);
@@ -27,5 +27,5 @@ public:
   std::vector<int32_t> &get_lattice_data() { return lattice; }
   size_t get_size() const { return size; }
 
-  nb::ndarray<nb::numpy, int32_t, nb::ndim<2>> get_lattice_view();
+  nb::ndarray<nb::numpy, int32_t, nb::ndim<2>> get_unpacked_lattice();
 };
